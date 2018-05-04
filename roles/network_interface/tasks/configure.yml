@@ -693,14 +693,6 @@
     dpdk_network_devices.FND_OVS.devices is defined and
     dpdk_drivers != ' '
 
-- name: network_interface | configure | Disable remote root login over ssh
-  become: yes
-  lineinfile: >
-     regexp="^#?PermitRootLogin "
-     line="PermitRootLogin no"
-     dest=/etc/ssh/sshd_config
-     state=present
-
 - name: network_interface | configure | Force libvirt vnet'x' port MTU
   become: yes
   template:
