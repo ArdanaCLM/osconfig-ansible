@@ -16,6 +16,7 @@
 #
 #}
 {{ interface_file_marker }}
-DPDK_OPTIONS="-c {{ dpdk_core_mask }} {{ dpdk_eal_opts }}"
-OVS_VSWITCHD_GROUP="{{ libvirt_qemu_user }}"
-OVS_VSWITCHD_UMASK="002"
+[Service]
+Environment="DPDK_OPTIONS=-c {{ dpdk_core_mask }} {{ dpdk_eal_opts }}"
+Environment="OVS_VSWITCHD_GROUP={{ libvirt_qemu_user }}"
+Environment="OVS_VSWITCHD_UMASK=002"

@@ -109,18 +109,6 @@
     ovs_suse_check and
     compute_with_dpdk_check
 
-- name: network_interface | configure | SUSE- Create openvswitch default options
-  become: yes
-  template:
-    src: openvswitch.j2
-    dest: /etc/sysconfig/openvswitch
-    owner: root
-    group: root
-    mode: 0644
-  when:
-    ovs_suse_check and
-    compute_with_dpdk_check
-
 - name: network_interface | configure | SUSE- Create openvswitch script to bind dpdk nics
   become: yes
   template:
@@ -138,6 +126,18 @@
   file:
     path: /usr/lib/systemd/system/openvswitch.service.d
     state: directory
+    owner: root
+    group: root
+    mode: 0644
+  when:
+    ovs_suse_check and
+    compute_with_dpdk_check
+
+- name: network_interface | configure | SUSE- Create openvswitch default options
+  become: yes
+  template:
+    src: openvswitch.j2
+    dest: /usr/lib/systemd/system/openvswitch.service.d/dpdk_environment.conf
     owner: root
     group: root
     mode: 0644
