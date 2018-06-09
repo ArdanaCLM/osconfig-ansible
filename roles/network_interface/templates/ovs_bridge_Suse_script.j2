@@ -22,6 +22,9 @@
                                -- set bridge {{ item.device }} other-config:hwaddr={{ item.hwaddr }} \
 {% endif %}
                                -- set bridge {{ item.device }} datapath_type={{ item.datapath_type }} || true
+
+  $PRE_UP || ovs-ofctl add-flow {{ item.device }} priority=0,actions=normal || true
+
 {% if item.bond_mode is defined %}
   $PRE_UP || ovs-vsctl --timeout=5 -- --may-exist add-bond {{ item.device }} {{ item.port }}
    {%- for slave in item.bond_slaves %}
