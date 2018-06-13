@@ -19,7 +19,7 @@
 {{ interface_file_marker }}
 OVS_BRIDGE='yes'
 
-{% if item.dpdk_port is not defined%}
+{% if item.dpdk_port is not defined and item.bond_mode is not defined -%}
 OVS_BRIDGE_PORT_DEVICE='{{ item.port }}'
 {%- endif %}
 

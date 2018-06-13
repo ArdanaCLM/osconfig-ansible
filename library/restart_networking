@@ -191,19 +191,21 @@ def main():
                      management_pattern, interfaces_path)
 
         # Check for DPDK NIC binding tasks - make sure the DPDK package
-        # is installed beforehand.
-        dpdk_drivers = {}
-        if os.path.exists("/usr/sbin/dpdk_nic_bind") and \
-                len(missing_files) > 0:
-            file_list = [os.path.join(shadow_path, file)
-                         for file in missing_files]
-            rc, out, err = module.run_command("grep '^#DPDK=' %s" %
-                                              " ".join(file_list),
-                                              check_rc=False)
-            if rc == 0:
-                for line in out.split():
-                    driver, pciaddr = re.sub('.*#DPDK=', '', line).split(',')
-                    dpdk_drivers[pciaddr] = driver
+        # is installed beforehand. This does not need to be done
+        # for Suse distros.
+        if os_family != 'Suse':
+            dpdk_drivers = {}
+            if os.path.exists("/usr/sbin/dpdk_nic_bind") and \
+                    len(missing_files) > 0:
+                file_list = [os.path.join(shadow_path, file)
+                             for file in missing_files]
+                rc, out, err = module.run_command("grep '^#DPDK=' %s" %
+                                                  " ".join(file_list),
+                                                  check_rc=False)
+                if rc == 0:
+                    for line in out.split():
+                        driver, pciaddr = re.sub('.*#DPDK=', '', line).split(',')
+                        dpdk_drivers[pciaddr] = driver
 
         flush_interfaces(module, os_family)
 
@@ -228,10 +230,12 @@ def main():
             shutil.copystat(src_path, dest_path)
 
         # Do DPDK bindings where necessary
-        for addr in dpdk_drivers:
-            module.run_command("/usr/sbin/dpdk_nic_bind --bind=%s %s" %
-                               (dpdk_drivers[addr], addr),
-                               check_rc=True)
+        # Not needed for Suse
+        if os_family != 'Suse':
+            for addr in dpdk_drivers:
+                module.run_command("/usr/sbin/dpdk_nic_bind --bind=%s %s" %
+                                   (dpdk_drivers[addr], addr),
+                                   check_rc=True)
 
         # Reload the udev device mappings
         log.info('Trigger udev mapping of network devices')
@@ -244,6 +248,11 @@ def main():
         persist_route_tables(module, routing_table_file, routing_tables,
                              routing_table_marker, routing_table_id_start)
 
+        network_start(module, os_family)
+
+        # the udevadm --reload command is asynchronouse and sometimes
+        # it can take some time, so we restart the network once more
+        network_stop(module, os_family)
         network_start(module, os_family)
 
         if restart_ovs and os_family == 'Debian':
