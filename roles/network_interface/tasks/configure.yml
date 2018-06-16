@@ -171,17 +171,9 @@
     ovs_suse_check and
     compute_with_dpdk_check
 
-- name: network_interface | configure | SUSE- Start openvswitch
+- name: network_interface | configure | SUSE- Configure dpdk openvswitch core mask
   become: yes
-  service:
-    name: openvswitch
-    state: started
-    enabled: yes
-  when: ovs_suse_check
-
-- name: network_interface | configure | SUSE- Configure dpdk openvswitch rxqs
-  become: yes
-  command: "ovs-vsctl set Open_vSwitch . other_config:n-dpdk-rxqs={{ dpdk_rx_queues }}"
+  command: "ovs-vsctl set Open_vSwitch . other_config:dpdk-lcore-mask={{ dpdk_core_mask }}"
   when:
     ovs_suse_check and
     compute_with_dpdk_check
@@ -193,6 +185,47 @@
     ovs_suse_check and
     compute_with_dpdk_check
 
+- name: network_interface | configure | SUSE- Configure openvswitch dpdk socket memory
+  become: yes
+  command: "ovs-vsctl set Open_vSwitch . other_config:dpdk-socket-mem={{ dpdk_socket_mem }}"
+  when:
+    ovs_suse_check and
+    compute_with_dpdk_check
+
+- name: network_interface | configure | SUSE- Configure openvswitch memory channels
+  become: yes
+  command: "ovs-vsctl set Open_vSwitch . other_config:dpdk-extra='-n {{ dpdk_extra_options }}'"
+  when:
+    ovs_suse_check and
+    compute_with_dpdk_check
+
+
+
+- name: network_interface | configure | SUSE- Configure dpdk openvswitch rxqs
+  become: yes
+  command: "ovs-vsctl set Open_vSwitch . other_config:n-dpdk-rxqs={{ dpdk_rx_queues }}"
+  when:
+    ovs_suse_check and
+    compute_with_dpdk_check
+
+
+- name: network_interface | configure | SUSE- Restart openvswitch
+  become: yes
+  service:
+    name: openvswitch
+    state: restarted
+    enabled: yes
+  when:
+    ovs_suse_check and
+    compute_with_dpdk_check
+
+- name: network_interface | configure | SUSE- Make certain openvswitch is started
+  become: yes
+  service:
+    name: openvswitch
+    state: started
+    enabled: yes
+  when: ovs_suse_check
 
 - name: network_interface | configure | Install linux-bridge packages
   become: yes
