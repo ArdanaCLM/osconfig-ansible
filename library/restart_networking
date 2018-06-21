@@ -80,6 +80,7 @@ EXAMPLES = '''
    os_family="Debian"
 '''
 
+import glob
 import logging
 import logging.handlers
 import os
@@ -152,6 +153,11 @@ def main():
 
         if not os.path.isdir(shadow_path):
             raise Exception('Shadow directory not found: %s' % shadow_path)
+
+        #Before we do any restart or configuration we need to make sure
+        # we don't have extra ifcfg files for non-present interfaces hanging
+        # around
+        disable_absent_ifcfg_interfaces(module, interfaces_path)
 
         # Get the list of shadow and interface files and arrange accordingly
         shadow_files = set(dir_scan(shadow_path))
@@ -264,6 +270,48 @@ def main():
     else:
         module.exit_json(**dict(changed=True, rc=0))
 
+
+def interfaces_according_to_ifcfg_files(interfaces_path):
+    file_pattern = os.path.join(interfaces_path, "ifcfg-*")
+    return {os.path.basename(file).replace('ifcfg-', '')
+            for file in glob.glob(file_pattern)}
+
+
+def interfaces_according_to_ip_link_show(module):
+    interfaces = []
+    rc, stdout, stderr = module.run_command('ip link show',
+                                            check_rc=False)
+    lines = stdout.splitlines()
+    # look for 2nd word in lines that start like this
+    # "2: eth0: <NO-CARRIER..."
+    # and split on '@'
+    for line in lines:
+        word = line.split(':')
+        if word[0].isdigit():
+            interfaces.append(word[1].split('@')[0].strip())
+    return set(interfaces)
+
+
+def disable_ifcfg_for(module, interfaces_path, interfaces):
+    for interface in interfaces:
+        src_file = os.path.join(interfaces_path, 'ifcfg-' + interface)
+        dst_file = os.path.join(interfaces_path,
+                                '-'.join(['disabled-ifcfg',
+                                          str(time.time()),
+                                          interface]))
+        try:
+
+            log.info("Moving {} to {}".format(src_file, dst_file))
+            cmd = ' '.join(['mv', src_file, dst_file])
+            module.run_command(cmd, check_rc=False)
+        except OSError:
+            log.info('Failed to move {} to {}'.format(src_file, dst_file))
+
+def disable_absent_ifcfg_interfaces(module, interfaces_path):
+    present_interfaces = interfaces_according_to_ip_link_show(module)
+    ifcfg_interfaces = interfaces_according_to_ifcfg_files(interfaces_path)
+    absent_interfaces = ifcfg_interfaces.difference(present_interfaces)
+    disable_ifcfg_for(module, interfaces_path, absent_interfaces)
 
 def network_stop(module, os_family):
     log.info('Stop networking services')
