@@ -63,15 +63,12 @@
     ardana_notify_service_systemd_result is defined and
     ardana_notify_service_systemd_result.changed
 
-- name: network_interface | configure | SUSE- Get libvirt_qemu_user from Nova
-  include_vars: ../../NOV-CMP-KVM/vars/suse.yml
-
 - name: osconfig | setup-hugepages | create hugepage directories
   become: yes
   file:
     name: /tmp/hugepages_{{ item.size }}
     state: directory
-    owner: "{{ libvirt_qemu_user }}"
+    owner: root
     group: root
     mode: 01770
   with_items:
