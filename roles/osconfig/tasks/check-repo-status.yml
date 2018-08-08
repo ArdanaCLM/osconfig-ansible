@@ -19,9 +19,6 @@
 
 - include: check-product-status.yml
 
-- name: osconfig | check-repo-status | Load expected repodata
-  include_vars: repos-cloud.yml
-
 - name: osconfig | check-repo-status | Set brand fact
   set_fact:
     brand: "{{ 'SUSE OpenStack Cloud' if (not product_flavor_soc|failed) else 'HPE Helion OpenStack' }}"

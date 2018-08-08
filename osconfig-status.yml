@@ -17,6 +17,8 @@
 - name: Check Product Status on all systems
   hosts: all:!localhost:!*-local
   max_fail_percentage: 0
+  roles:
+    - product-media
   tasks:
     - include: roles/osconfig/tasks/check-repo-status.yml
       when: "{{ (ansible_os_family | lower) == 'suse' and
