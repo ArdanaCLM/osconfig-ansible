@@ -807,3 +807,13 @@
   when:
     - ansible_os_family == 'RedHat'
     - ovs_bridge_interfaces | length > 0
+
+- name: network_interface | configure | SUSE- Restart dpdk network
+  become: yes
+  service:
+    name: network
+    state: restarted
+    enabled: yes
+  when:
+    ovs_suse_check and
+    compute_with_dpdk_check
