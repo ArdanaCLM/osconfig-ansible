@@ -154,7 +154,7 @@ def main():
         if not os.path.isdir(shadow_path):
             raise Exception('Shadow directory not found: %s' % shadow_path)
 
-        #Before we do any restart or configuration we need to make sure
+        # Before we do any restart or configuration we need to make sure
         # we don't have extra ifcfg files for non-present interfaces hanging
         # around
         disable_absent_ifcfg_interfaces(module, interfaces_path)
@@ -250,6 +250,12 @@ def main():
                            check_rc=True)
         module.run_command('udevadm settle --timeout 60', check_rc=True)
 
+        # triggering the udev device mapping has the side effect
+        # of leaving around unwanted (stale) ifcfg-* files
+        # we need to remove them or network start up will take
+        # a very long time
+        disable_absent_ifcfg_interfaces(module, interfaces_path, shadow_files)
+
         # Reset the routing-tables
         persist_route_tables(module, routing_table_file, routing_tables,
                              routing_table_marker, routing_table_id_start)
@@ -280,10 +286,16 @@ def main():
         module.exit_json(**dict(changed=True, rc=0))
 
 
+def interface_names_from(list_of_ifcfg_files):
+    if list_of_ifcfg_files is None:
+        return set()
+    return {os.path.basename(f).replace('ifcfg-', '')
+            for f in list_of_ifcfg_files}
+
+
 def interfaces_according_to_ifcfg_files(interfaces_path):
     file_pattern = os.path.join(interfaces_path, "ifcfg-*")
-    return {os.path.basename(file).replace('ifcfg-', '')
-            for file in glob.glob(file_pattern)}
+    return interface_names_from(glob.glob(file_pattern))
 
 
 def interfaces_according_to_ip_link_show(module):
@@ -316,11 +328,16 @@ def disable_ifcfg_for(module, interfaces_path, interfaces):
         except OSError:
             log.info('Failed to move {} to {}'.format(src_file, dst_file))
 
-def disable_absent_ifcfg_interfaces(module, interfaces_path):
-    present_interfaces = interfaces_according_to_ip_link_show(module)
+
+def disable_absent_ifcfg_interfaces(module, interfaces_path,
+                                    shadow_files=None):
+    valid_interfaces = set()
+    valid_interfaces.update(interfaces_according_to_ip_link_show(module))
+    valid_interfaces.update(interface_names_from(shadow_files))
     ifcfg_interfaces = interfaces_according_to_ifcfg_files(interfaces_path)
-    absent_interfaces = ifcfg_interfaces.difference(present_interfaces)
+    absent_interfaces = ifcfg_interfaces.difference(valid_interfaces)
     disable_ifcfg_for(module, interfaces_path, absent_interfaces)
+
 
 def network_stop(module, os_family):
     log.info('Stop networking services')
