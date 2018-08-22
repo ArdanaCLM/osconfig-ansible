@@ -72,31 +72,10 @@
 # Set up required SUSE Media #
 ##############################
 
-- name: osconfig | setup-zypp | Add SLES and Cloud repos
+- name: osconfig | setup-zypp | Set repository facts
   set_fact:
-    _repositories:
-      - alias: Cloud
-        name: Cloud
-      - alias: PTF
-        name: PTF
-      - alias: SLES12-SP3-Pool
-        name: SLES12-SP3-Pool
-      - alias: SLES12-SP3-Updates
-        name:  SLES12-SP3-Updates
-      - alias: SLES12-SP3-Updates-test
-        name:  SLES12-SP3-Updates-test
-      - alias: SUSE-OpenStack-Cloud-8-Pool
-        name: OpenStack-Cloud-8-Pool
-      - alias: SUSE-OpenStack-Cloud-8-Updates
-        name:  OpenStack-Cloud-8-Updates
-      - alias: SUSE-OpenStack-Cloud-8-Updates-test
-        name:  OpenStack-Cloud-8-Updates-test
-      - alias: HPE-Helion-OpenStack-8-Pool
-        name: OpenStack-8-Pool
-      - alias: HPE-Helion-OpenStack-8-Updates
-        name: OpenStack-8-Updates
-      - alias: HPE-Helion-OpenStack-8-Updates-test
-        name: OpenStack-8-Updates-test
+    _repositories: "{{ repositories[suse_release][ansible_architecture] }}"
+    _http_repo_base_url: "{{ zypp_server_http }}/{{ http_repo_path }}"
 
 - set_fact:
     suse_release: suse-{{ansible_distribution_version}}
@@ -106,7 +85,7 @@
   zypper_repository:
     name: "{{ item.alias }}"
     description: "{{ item.name }}"
-    repo: "{{ zypp_server_http }}/SUSE-12-3/{{ ansible_architecture }}/repos/{{ item.alias }}"
+    repo: "{{ _http_repo_base_url }}/{{ item.alias }}"
   with_items: _repositories
   # If the repositories are not available on the deployer, that is not
   # necessarily critical yet. The next tasks will check whether the release

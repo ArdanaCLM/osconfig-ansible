@@ -26,6 +26,7 @@
 
 - hosts: "{{ osconfig_resources | default('resources') }}"
   roles:
+    - product-media
     - ssh
     - osconfig
     - cobbler
