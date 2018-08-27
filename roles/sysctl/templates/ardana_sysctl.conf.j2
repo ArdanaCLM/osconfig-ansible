@@ -1,7 +1,7 @@
 {#
 #
 # (c) Copyright 2015-2017 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -55,11 +55,8 @@ vm.max_map_count = 65530
 {# sysctl settings which should be on all servers, regardless of services #}
 # common
 net.ipv4.tcp_keepalive_probes = 3
-net.ipv4.tcp_syncookies = 0
-net.ipv4.tcp_tw_reuse = 1
 net.ipv4.tcp_keepalive_intvl = 5
 net.ipv4.tcp_keepalive_time = 45
-net.ipv4.tcp_tw_recycle = 1
 net.nf_conntrack_max = 524288
 
 fs.aio-max-nr = 1048576
