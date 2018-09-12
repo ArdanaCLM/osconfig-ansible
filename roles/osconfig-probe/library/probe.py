@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
 # (c) Copyright 2015-2017 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -364,7 +364,7 @@ def ip():
     for interface in interfaces:
         name = interface['name']
         try:
-            output = subprocess.check_output(['/sbin/ethtool',  '%s' % name])
+            output = subprocess.check_output(['/usr/sbin/ethtool',  '%s' % name])
         except subprocess.CalledProcessError:
             output = ''
         dev_info = interface.get('device')[0]
