@@ -26,5 +26,3 @@ crashkernel_settings: "crashkernel=384M-2G:64M,2G-:256M"
 
 osconfig_zypper_os_repo_name: SLES-OS
 osconfig_zypper_os_repo_loc: ardana/sles12/zypper/OS/
-
-osconfig_yum_optional_repo_loc: ardana/rhel7/yum/optional/
