@@ -251,7 +251,7 @@ def append_default_rules(chains, prefix, logging, cmds, cmds_ip6):
               chain_name
         cmds.append(cmd)
         # Open ports needed for icmpv6 functionality
-        for port in [130, 131, 132, 135, 136]:
+        for port in [130, 131, 132, 134, 135, 136]:
             cmd = '-A %s -p icmpv6 --icmpv6-type %s -j ACCEPT' % (chain_name,
                                                                   port)
             cmds_ip6.append(cmd)
