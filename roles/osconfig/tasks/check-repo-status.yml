@@ -29,7 +29,6 @@
     brand: "{{ brand }}"
   register: maintenance_repos_installed
   ignore_errors: true
-  when: deployer_media_legacy_layout|bool == false
 
 # Finally, if the above didn't work, fail.
 - name: osconfig | check-repo-status | Fail if unable to configure SLES and Cloud repos

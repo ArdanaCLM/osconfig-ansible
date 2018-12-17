@@ -28,4 +28,4 @@
       The deployer node does not have a Cloud Add-On product installed.
       In YaST select Software/Add-On Products to see an overview of installed
        add-on products and use "Add" to add the Cloud product.
-  when: product_flavor_soc|failed and not deployer_media_legacy_layout|bool
+  when: product_flavor_soc|failed
