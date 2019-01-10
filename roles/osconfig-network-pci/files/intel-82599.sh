@@ -23,7 +23,7 @@
 # Variables shared between functions
 #########################################################################
 
-export HLINUX_SYSPATH="/sys/class/net"
+export DEBIAN_SYSPATH="/sys/class/net"
 export INTEL_VFDRIVER_CONF="/etc/modprobe.d/blacklist-ixgbevf.conf"
 export BLACKLIST="blacklist ixgbevf"
 
@@ -97,7 +97,7 @@ DEVICE=$2
 VF_COUNT=$3
 OPERATION=$4
 
-DEV_FILE=$HLINUX_SYSPATH/$DEVICE/device/sriov_numvfs
+DEV_FILE=$DEBIAN_SYSPATH/$DEVICE/device/sriov_numvfs
 
 if [ "$DISTRO" == "Debian" ] || [ "$DISTRO" == "RedHat" ] || [ "$DISTRO" == "Suse" ]; then
     case $OPERATION in

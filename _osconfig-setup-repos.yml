@@ -33,12 +33,9 @@
     - deployer-setup
     - thirdparty-repo
   tasks:
-    - include: roles/osconfig/tasks/check-for-apt-repo.yml
     - include: roles/osconfig/tasks/check-for-yum-repo.yml
     - include: roles/osconfig/tasks/check-for-zypp-repo.yml
     - include: roles/cobbler/tasks/set-vars.yml
-    - include: roles/osconfig/tasks/setup-apt.yml
-      when: ansible_os_family == 'Debian'
     - include: roles/osconfig/tasks/setup-yum.yml
       when: ansible_os_family == 'RedHat'
     - include: roles/osconfig/tasks/setup-zypp.yml
