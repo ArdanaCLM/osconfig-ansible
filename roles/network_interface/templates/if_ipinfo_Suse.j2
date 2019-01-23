@@ -1,7 +1,7 @@
 {#
 #
 # (c) Copyright 2017 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2019 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -16,14 +16,12 @@
 # under the License.
 #
 #}
-{% set ip_family %}{% if item.family is defined and item.family == 'IPv6' %}V6{% else %}{% endif %}
-{% endset %}
 {% if item.bootproto == 'manual' %}
 BOOTPROTO=none
 {% elif item.bootproto == 'static' %}
 BOOTPROTO=static
 {% if item.address is defined %}
-IP{{ ip_family }}ADDR={{ item.address }}
+IPADDR={{ item.address }}
 {% endif %}
 {% if item.netmask is defined %}
 PREFIXLEN={{ item.netmask }}
