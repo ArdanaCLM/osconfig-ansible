@@ -18,6 +18,8 @@
   vars:
     playbook_name: "wipe_disks.yml"
 
+- include: ardana-ssh-keyscan.yml
+
 - hosts: "{{ osconfig_resources | default('resources') }}"
   roles:
     - diskconfig
