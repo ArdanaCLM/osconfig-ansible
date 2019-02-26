@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2015-2017 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017-2018 SUSE LLC
+# (c) Copyright 2017-2019 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -65,17 +65,26 @@
       path: /etc/multipath.conf
   register: multipath_conf_result
 
+- name: multipath | install | initialize rewrite_multipath_conf to True
+  set_fact:
+      rewrite_multipath_conf: True
+
+- name: multipath | install | set rewrite_multipath_conf to False
+  set_fact:
+      rewrite_multipath_conf: False
+  when: manual_multipath_conf and multipath_conf_result.stat.exists
+
 - name: multipath | install | Set user_friendly_names yes
   set_fact:
       multipath_user_friendly_names: "yes"
-  when: multipath_conf_result.stat.exists == False
+  when: rewrite_multipath_conf
 
 - name: multipath | install | Set initial multipath configuration
   template:
     src: "multipath.conf.j2"
     dest: "/etc/multipath.conf"
   register: configuration_update
-  when: multipath_conf_result.stat.exists == False
+  when: rewrite_multipath_conf
 
 - name: multipath | install | Load the multipath daemon on redhat
   command: modprobe dm-multipath
@@ -98,7 +107,7 @@
 # Run multipath the first time
 - name: multipath | install | run multipath on first run
   command: /sbin/multipath
-  when: multipath_first_run is defined or multipath_conf_result.stat.exists == False
+  when: multipath_first_run is defined or rewrite_multipath_conf == False
   ignore_errors: yes
 
 # The disk_binding_result is consumed in the multipath.conf template
@@ -120,6 +129,7 @@
 - name: multipath | install | Set user_friendly_names no
   set_fact:
       multipath_user_friendly_names: "no"
+  when: rewrite_multipath_conf
 
 # This is with the aliases for the user friendly names for first run other wise normal
 - name: multipath | install | Set real multipath configuration
@@ -127,10 +137,20 @@
     src: "multipath.conf.j2"
     dest: "/etc/multipath.conf"
   register: configuration_update
+  when: rewrite_multipath_conf
+
+- name: multipath | install | initialize rerun_multipath
+  set_fact:
+    rerun_multipath: False
+
+- name: multipath | install | set rerun_multipath to True
+  set_fact:
+    rerun_multipath: True
+  when: configuration_update is defined and configuration_update.changed
 
 - name: multipath | install | run multipath on first run
   command: /sbin/multipath
-  when: configuration_update.changed or multipath_first_run is defined
+  when: rerun_multipath or multipath_first_run is defined
 
 # This may be redundant
 - name: multipath | install | Restart if there is a configuration update
@@ -139,11 +159,11 @@
     state: "restarted"
     enabled: "yes"
   with_items: service_daemons
-  when: configuration_update.changed or multipath_first_run is defined
+  when: rerun_multipath or multipath_first_run is defined
 
 - name: multipath | install | Update initramfs
   command: "{{ initramfs_update_command }}"
-  when: initramfs_update_command is defined and configuration_update.changed
+  when: initramfs_update_command is defined and rerun_multipath
 
 - name: multipath | marker | create /etc/openstack directory
   file: path=/etc/openstack state=directory

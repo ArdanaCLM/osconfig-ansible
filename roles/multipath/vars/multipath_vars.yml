@@ -15,6 +15,13 @@
 # under the License.
 #
 ---
+# Set manual_multipath_conf to True if /etc/multipath.conf has been
+# manually crafted. When True, the multipath playbooks will not write-over
+# the file. So in effect, the playbooks will be ignoring the other
+# parameters in this file.
+
+manual_multipath_conf: False
+
 multipath_user_friendly_names: "no"
 
 multipath_devices:

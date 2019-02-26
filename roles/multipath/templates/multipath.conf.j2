@@ -19,8 +19,10 @@
 defaults {
     user_friendly_names {{ multipath_user_friendly_names }}
 {% if multipath_defaults is defined %}
-{% for key in multipath_defaults %}
-    {{ key }} "{{ multipath_defaults[key] }}"
+{% for default_item in multipath_defaults %}
+{% for key in default_item %}
+    {{ key }} "{{ default_item[key] }}"
+{% endfor %}
 {% endfor %}
 {% endif %}
 }

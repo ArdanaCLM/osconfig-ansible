@@ -1,6 +1,6 @@
 
 (c) Copyright 2015 Hewlett Packard Enterprise Development LP
-(c) Copyright 2017 SUSE LLC
+(c) Copyright 2017-2019 SUSE LLC
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may
 not use this file except in compliance with the License. You may obtain
@@ -91,6 +91,13 @@ do the following before running the site.yml playbook
               vendor: "3PARdata"
               product: "VV"
     NOTE: Additionally all disk model devices will be blacklisted by default using wwid
+
+    (Alternative) If you need to use manually crafted multipath.conf on each node, set
+    parameter manual_multipath_conf to True in the file multipath/multipath_settings.yml
+    under my_cloud/config:
+
+    manual_multipath_conf: True
+
  2. Modify the file as per the "Role Variables" section described at the beginning
  3. Follow the below steps to apply the settings:
 
