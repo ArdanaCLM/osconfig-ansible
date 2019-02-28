@@ -51,6 +51,15 @@
     - include: roles/network_interface/tasks/neutron-ovs-agent-restart.yml
       when: ('NEU-OVS' in group.services)
 
+      # Network restarts can cause neutron-server to be stopped without
+      # being automatically restarted so we ensure it is either running,
+      # or gets restarted, after the network restart completes.
+      #
+      # ::TODO:: This needs to be moved out of here and put in the
+      #          neutron-ansible playbook, where it belongs.
+    - include: roles/network_interface/tasks/neutron-server-restart.yml
+      when: ('NEU-SVR' in group.services)
+
 - hosts: "{{ osconfig_resources | default('resources') }}:!OPS-LM:!FND-CLU"
   roles:
     - network_interface
