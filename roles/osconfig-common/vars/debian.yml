@@ -22,6 +22,7 @@ common_packages:
   - dbus
   - vim
   - python-yaml
+  - cron
 
 ntp_cli_pkgs:
   - lockfile-progs

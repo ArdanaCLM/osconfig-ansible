@@ -23,6 +23,7 @@ common_packages:
   - vim
   - libyaml-0-2
   - rsyslog
+  - cron
 
 ntp_cli_pkgs:
   - ntp
