@@ -19,9 +19,6 @@
 {% include 'ifscript_header_Suse.j2' %}
 
 
-{# ADD NORMAL FLOW TO PREVENT UNINTENDED DISCONNECTION FROM NETWORK #}
- $POST_UP || ovs-ofctl add-flow {{ item.device }} priority=0,actions=normal || true
-
 {% for vlan_interface in network_vlan_interfaces if vlan_interface.ovs_bridge is defined and vlan_interface.ovs_bridge == item.device %}
 $POST_UP || VLANID_HEX=`printf '%04x' {{ vlan_interface.vlanid }}`
 {# assuming the lower 48-bit is the mac address #}
