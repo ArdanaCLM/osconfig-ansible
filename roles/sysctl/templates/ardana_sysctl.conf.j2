@@ -42,6 +42,12 @@ net.ipv4.neigh.default.gc_thresh3 = 32768
 {% endif %}
 {% endfor %}
 
+{# neutron-dhcp-agent #}
+{% if 'neutron-dhcp-agent' in group.services %}
+# neutron-dhcp-agent
+fs.inotify.max_user_instances = 256
+{% endif %}
+
 {# nova-compute #}
 {% if 'nova-compute' in group.services %}
 # nova-compute
