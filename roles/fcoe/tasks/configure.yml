@@ -125,6 +125,22 @@
      enabled: true
   when: fcoe_result.changed and ansible_os_family == 'RedHat'
 
+- name: fcoe | configure | restart the service
+  become: yes
+  service:
+     name: fcoe
+     state: restarted
+     enabled: true
+  when: fcoe_result.changed and ansible_os_family == 'Suse'
+
+- name: fcoe | configure | restart the service
+  become: yes
+  service:
+     name: multipathd
+     state: restarted
+     enabled: true
+  when: fcoe_result.changed and ansible_os_family == 'Suse'
+
 - name: fcoe | configure | get scsi hosts
   become: yes
   shell: ls -d -1 /sys/class/scsi_host/host*
