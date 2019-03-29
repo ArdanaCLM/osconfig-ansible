@@ -34,7 +34,7 @@
 {% if nic.type == "multi-port" %}
 {% set port_num = nic.port_attributes['port_num'] %}
 #Backward compatiblity for 3 series and 4 series mlx drivers
-SUBSYSTEM=="net", ACTION=="add", DEVPATH=="*/{{nic.bus_address}}/*", ATTR{dev_id}=="0x{{port_num}}", ATTR{dev_port}=="{{port_num}}", NAME="{{nic.logical_name}}"{{run_directive[0]|default('')}}
+SUBSYSTEM=="net", ACTION=="add", DEVPATH=="*/{{nic.bus_address}}/*", ATTR{dev_id}=="0x0", ATTR{dev_port}=="{{port_num}}", NAME="{{nic.logical_name}}"{{run_directive[0]|default('')}}
 {% elif  nic.type == "simple-port" %}
 SUBSYSTEM=="net", ACTION=="add", DEVPATH=="*/{{nic.bus_address}}/*", NAME="{{nic.logical_name}}"{{run_directive[0]|default('')}}
 {% else %}
