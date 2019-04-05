@@ -47,7 +47,12 @@
   ignore_errors: true
 
 - name: osconfig | diskconfig | get multipath list of devices
-  shell: ls -1 /dev/mapper/ | grep "mpath"  | grep -v {{ wipe_disks_skip_partition }}$ | grep -v {{ wipe_disks_skip_partition }}[0-9]
+  shell: >-
+      ls -1 /dev/mapper/ | 'grep' "mpath" |
+        grep -v '{{ wipe_disks_skip_partition }}$' |
+        grep -v '{{ wipe_disks_skip_partition }}[0-9]' |
+        grep -v '{{ wipe_disks_skip_partition }}_part[0-9]' |
+        grep -v '{{ wipe_disks_skip_partition }}-part[0-9]'
   register: multi_results
   become: yes
   when: wipe_disks_multipath == True
