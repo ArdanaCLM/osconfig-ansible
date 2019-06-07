@@ -20,7 +20,7 @@
   iptables_update:
     command: >
       --delete {{ iptables_chain }}
-      --destination {{ item.ip }}/32
+      --destination {{ item.ip }}
       --protocol tcp
       --match tcp
       --dport {{ item.port }}

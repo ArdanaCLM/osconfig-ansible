@@ -68,7 +68,7 @@
   iptables_update:
     command: >
       --check {{ iptables_chain }}
-      --destination {{ item.ip }}/32
+      --destination {{ item.ip }}
       --protocol tcp
       --match tcp
       --dport {{ item.port }}
@@ -91,7 +91,7 @@
   iptables_update:
     command: >
       --insert {{ iptables_chain }}
-      --destination {{ item.item.ip }}/32
+      --destination {{ item.item.ip }}
       --protocol tcp
       --match tcp
       --dport {{ item.item.port }}
