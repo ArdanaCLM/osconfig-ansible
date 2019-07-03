@@ -19,16 +19,6 @@
 {% include 'ifscript_header_Suse.j2' %}
 
 
-{% for vlan_interface in network_vlan_interfaces if vlan_interface.ovs_bridge is defined and vlan_interface.ovs_bridge == item.device %}
-$POST_UP || VLANID_HEX=`printf '%04x' {{ vlan_interface.vlanid }}`
-{# assuming the lower 48-bit is the mac address #}
-$POST_UP || LOWERCASE_MAC=`ovs-vsctl get Bridge {{ item.device }} datapath-id`
-$POST_UP || LOWERCASE_MAC=${LOWERCASE_MAC:5:12}
-$POST_UP || DATAPATH_ID="${VLANID_HEX}${LOWERCASE_MAC}"
-$POST_UP || ovs-vsctl set Bridge {{ item.device }} other-config:datapath-id=$DATAPATH_ID
-{% endfor %}
-
-
 {# FOR DPDK BRIDGES WE NEED TO SET DATAPATH TYPE ON START, AND DELETE PORT AND BRIDGE ON EXIT #}
 {% if item.dpdk_port is defined -%}
 $POST_UP || ovs-vsctl --timeout=5 set bridge {{ item.device }} datapath_type=netdev || true
