@@ -351,7 +351,7 @@ def run_iptables_cmd(module, command):
     # As the command can be any arbitrary command and the address protocol
     # is unknown, run for both iptables and ip6tables and report failure
     # only if both fail.
-    checking = command.startswith("-C")
+    checking = command.startswith(("-C ", "--check "))
     cmd = 'iptables ' + command
     rcv4, stdoutv4, stderrv4 = module.run_command(cmd)
     cmdipv6 = 'ip6tables ' + command
