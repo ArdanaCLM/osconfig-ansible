@@ -72,6 +72,29 @@
     rm -rf $ARDANA_TMPDIR
   when: hostvars['localhost']['ptf_signing_key'] is defined
 
+##############################################
+# Delete repos for previous release if found #
+##############################################
+
+- name: osconfig | setup-zypp | Clean repos for old release
+  become: yes
+  command: >-
+    zypper clean --all {{ item.alias }}
+  with_items: "{{ repositories[suse_prev_release][ansible_architecture] }}"
+  ignore_errors: true
+  when:
+    - suse_current_release == suse_prev_release
+
+- name: osconfig | setup-zypp | Delete repos for old release
+  become: yes
+  zypper_repository:
+    name: "{{ item.alias }}"
+    state: "absent"
+  with_items: "{{ repositories[suse_prev_release][ansible_architecture] }}"
+  ignore_errors: true
+  when:
+    - suse_current_release == suse_prev_release
+
 ##############################
 # Set up required SUSE Media #
 ##############################
@@ -81,16 +104,13 @@
     _repositories: "{{ repositories[suse_release][ansible_architecture] }}"
     _http_repo_base_url: "{{ zypp_server_http }}/{{ http_repo_path }}"
 
-- set_fact:
-    suse_release: suse-{{ansible_distribution_version}}
-
 - name: osconfig | setup-zypp | Configure SLES and Cloud repos on nodes
   become: yes
   zypper_repository:
     name: "{{ item.alias }}"
     description: "{{ item.name }}"
     repo: "{{ _http_repo_base_url }}/{{ item.alias }}"
-  with_items: _repositories
+  with_items: "{{ _repositories }}"
   # If the repositories are not available on the deployer, that is not
   # necessarily critical yet. The next tasks will check whether the release
   # package is available. If it is, then at least the Cloud media made it onto

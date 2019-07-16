@@ -14,9 +14,6 @@
 # under the License.
 #
 ---
-- set_fact:
-    suse_release: suse-{{ansible_distribution_version}}
-
 - include: check-product-status.yml
 
 - name: osconfig | check-repo-status | Set brand fact
