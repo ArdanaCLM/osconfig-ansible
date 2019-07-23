@@ -20,6 +20,6 @@ repo_urls: []
 # An example of a remote repository to be added looks like:
 # repo_urls:
 #   - name: "user_supplied"
-#     description: "User supplied external package repository"
-#     repo: "http://ftp.gwdg.de/pub/linux/misc/packman/suse/openSUSE_Leap_42.3/"
-#     disable_gpg_check: yes
+#     description: "User-supplied internal package repo holding special SDN software"
+#     repo: "http://myrepo-server.intranet.mycorp.com/special-sdn-rpms/"
+#     disable_gpg_check: no
