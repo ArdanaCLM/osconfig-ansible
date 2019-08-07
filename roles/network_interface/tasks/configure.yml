@@ -93,6 +93,15 @@
   with_items: openvswitch_packages
   when: ovs_suse_check
 
+- name: osconfig | configure-logrotate | Set logrotate openvswitch user
+  become: yes
+  template:
+    src: logrotate-openvswitch.j2
+    dest: /etc/logrotate.d/openvswitch
+    owner: root
+    group: root
+    mode: 0644
+
 - name: network_interface | configure | SUSE- Install extra dpdk packages
   become: yes
   package:
