@@ -19,6 +19,11 @@
 {% include 'ifscript_header_Suse.j2' %}
 
 
+{%- if item.forward_normal_on_post_up | default(false) %}
+# IF MANAGEMENT NETWORK, ADD NORMAL FLOW TO PREVENT UNINTENDED DISCONNECTION FROM NETWORK
+$POST_UP || ovs-ofctl add-flow {{ item.device }} table=0,priority=0,actions=normal || true
+{% endif %}
+
 {# FOR DPDK BRIDGES WE NEED TO SET DATAPATH TYPE ON START, AND DELETE PORT AND BRIDGE ON EXIT #}
 {% if item.dpdk_port is defined -%}
 $POST_UP || ovs-vsctl --timeout=5 set bridge {{ item.device }} datapath_type=netdev || true
