@@ -17,6 +17,6 @@
 #}
 [ardanarepo]
 name=Ardana OpenStack Repository
-baseurl=http://{{ ansible_env.SSH_CLIENT.split()[0] }}:{{ deployer_server_port }}/{{ yum_extras_loc }}
+baseurl=http://{{ ansible_env.SSH_CLIENT.split()[0] | ipwrap }}:{{ deployer_server_port }}/{{ yum_extras_loc }}
 enabled=1
 gpgcheck=0
