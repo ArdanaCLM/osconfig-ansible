@@ -13,7 +13,7 @@
 # under the License.
 
 /var/log/openvswitch/*.log {
-    su {{ ovs_user | default('root') }} {{ ovs_group | default('root') }}
+    su {{ ovs_user }} {{ ovs_group }}
     daily
     compress
     sharedscripts

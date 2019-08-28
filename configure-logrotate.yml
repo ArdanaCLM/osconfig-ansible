@@ -13,11 +13,6 @@
 # under the License.
 ---
 
-- name: osconfig | configure-logrotate | Set logrotate openvswitch user
-  become: yes
-  template:
-    src: logrotate-openvswitch.j2
-    dest: /etc/logrotate.d/openvswitch
-    owner: root
-    group: root
-    mode: 0644
+- hosts: NEU-OVS
+  tasks:
+    - include: roles/network_interface/tasks/configure-openvswitch-logrotate.yml
