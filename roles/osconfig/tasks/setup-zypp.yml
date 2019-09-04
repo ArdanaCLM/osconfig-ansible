@@ -110,7 +110,7 @@
     name: "{{ item.alias }}"
     description: "{{ item.name }}"
     repo: "{{ _http_repo_base_url }}/{{ item.alias }}"
-  with_items: "{{ _repositories }}"
+  with_items: _repositories
   # If the repositories are not available on the deployer, that is not
   # necessarily critical yet. The next tasks will check whether the release
   # package is available. If it is, then at least the Cloud media made it onto
