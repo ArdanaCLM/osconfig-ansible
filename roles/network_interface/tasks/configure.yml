@@ -133,8 +133,7 @@
     group: root
     mode: 0644
   when:
-    ovs_suse_check and
-    compute_with_dpdk_check
+    ovs_suse_check
 
 - name: network_interface | configure | SUSE- Create openvswitch default options
   become: yes
@@ -157,12 +156,19 @@
     ovs_suse_check and
     compute_with_dpdk_check
 
+- name: network_interface | configure | SUSE- Configure openvswitch to start before wickedd
+  become: yes
+  template:
+    src: openvswitch.service-wickedd.conf.j2
+    dest: /usr/lib/systemd/system/openvswitch.service.d/wickedd.conf
+  when:
+    ovs_suse_check
+
 - name: network_interface | configure | SUSE- Systemctl daemon-reload
   become: yes
   shell: systemctl daemon-reload
   when:
-    ovs_suse_check and
-    compute_with_dpdk_check
+    ovs_suse_check
 
 - name: network_interface | configure | SUSE- Restart openvswitch
   become: yes
