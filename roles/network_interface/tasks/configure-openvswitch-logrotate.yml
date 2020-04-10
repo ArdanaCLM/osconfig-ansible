@@ -14,24 +14,34 @@
 ---
 
 - name: osconfig | configure-logrotate | Discover openvswitch user
-  shell: source /etc/sysconfig/openvswitch && echo ${OVS_USER_ID%:*}
-  register: discovered_ovs_user
-  when: ovs_user is not defined
+  shell: |
+    set -e
+    if grep "^OVS_USER_ID=" /etc/sysconfig/openvswitch; then
+      source /etc/sysconfig/openvswitch
+    elif grep "^OVS_USER_ID=" /etc/openvswitch/default.conf; then
+      source /etc/openvswitch/default.conf
+    fi
+    echo ${OVS_USER_ID:-root:root}
+  register: discovered_ovs_user_info
+  when: ovs_user_info is not defined
+
+- name: osconfig | configure-logrotate | Set ovs_user_info
+  set_fact:
+    ovs_user_info: "{{ discovered_ovs_user_info.stdout }}"
+  when:
+    - ovs_user_info is not defined
 
 - name: osconfig | configure-logrotate | Set ovs_user
   set_fact:
-    ovs_user: "{{ discovered_ovs_user.stdout }}"
-  when: ovs_user is not defined and discovered_ovs_user.stdout != ""
-
-- name: osconfig | configure-logrotate | Discover openvswitch group
-  shell: source /etc/sysconfig/openvswitch && echo ${OVS_USER_ID##*:}
-  register: discovered_ovs_group
-  when: ovs_group is not defined
+    ovs_user: "{{ ovs_user_info.split(':')[0] }}"
+  when:
+    - ovs_user is not defined
 
 - name: osconfig | configure-logrotate | Set ovs_group
   set_fact:
-    ovs_group: "{{ discovered_ovs_group.stdout }}"
-  when: ovs_group is not defined and discovered_ovs_group.stdout != ""
+    ovs_group: "{{ ovs_user_info.split(':')[1] }}"
+  when:
+    - ovs_group is not defined
 
 - name: osconfig | configure-logrotate | Set logrotate openvswitch user
   become: yes
