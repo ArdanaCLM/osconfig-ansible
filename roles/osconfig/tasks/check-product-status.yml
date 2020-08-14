@@ -14,6 +14,12 @@
 # under the License.
 #
 ---
+- name: deployer-setup | check-product-status | Check HOS product installed
+  command: |-
+    zypper info hpe-helion-openstack-release | grep "^Installed *: *Yes"
+  ignore_errors: yes
+  register: product_flavor_hos
+
 - name: deployer-setup | check-product-status | Check SOC product availability
   become: yes
   zypper:
@@ -28,4 +34,6 @@
       The deployer node does not have a Cloud Add-On product installed.
       In YaST select Software/Add-On Products to see an overview of installed
        add-on products and use "Add" to add the Cloud product.
-  when: product_flavor_soc|failed
+  when:
+    - product_flavor_soc|failed
+    - product_flavor_hos|failed
