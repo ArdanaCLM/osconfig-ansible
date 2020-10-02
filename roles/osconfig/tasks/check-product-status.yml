@@ -15,7 +15,7 @@
 #
 ---
 - name: deployer-setup | check-product-status | Check HOS product installed
-  command: |-
+  shell: |-
     zypper info hpe-helion-openstack-release | grep "^Installed *: *Yes"
   ignore_errors: yes
   register: product_flavor_hos
