@@ -16,9 +16,9 @@
 - name: osconfig | configure-logrotate | Discover openvswitch user
   shell: |
     set -e
-    if grep "^OVS_USER_ID=" /etc/sysconfig/openvswitch; then
+    if grep "^OVS_USER_ID=" /etc/sysconfig/openvswitch >/dev/null 2>&1;  then
       source /etc/sysconfig/openvswitch
-    elif grep "^OVS_USER_ID=" /etc/openvswitch/default.conf; then
+    elif grep "^OVS_USER_ID=" /etc/openvswitch/default.conf >/dev/null 2>&1; then
       source /etc/openvswitch/default.conf
     fi
     echo ${OVS_USER_ID:-root:root}
